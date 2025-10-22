@@ -861,8 +861,7 @@ l_mfi, fig_mfi = mfi(df)
 @st.cache_resource
 def adi(df):
     fig_adi = px.area(df["volume_adi"])
-    fig_adi.update_layout(title=f'Calculated ADI for {
-                          stock}', showlegend=False)
+    fig_adi.update_layout(title=f'Calculated ADI for {stock}', showlegend=False)
     fig_adi.update_xaxes(title='Timeline', showticklabels=True, visible=True)
     fig_adi.update_yaxes(
         title=f'ADI for {stock}', showticklabels=True, visible=True)
