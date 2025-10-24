@@ -66,13 +66,13 @@ with mx1:
 with mx2:
     st.video('https://youtu.be/CkMui1TdMqg?si=o1Jq44z8wxWYMsKn')
 # #################################
-x3, x4 = st.columns(2)
-with x3:
-    st.subheader("Day's Leading Performers")
-    st.write(df_tg)
-with x4:
-    st.subheader("Day's Lagging Performers")
-    st.write(df_tl)
+#x3, x4 = st.columns(2)
+#with x3:
+#    st.subheader("Day's Leading Performers")
+#    st.write(df_tg)
+#with x4:
+#    st.subheader("Day's Lagging Performers")
+#    st.write(df_tl)
 
 # Form and Inputs ############################################################
 
