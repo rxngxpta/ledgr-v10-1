@@ -25,7 +25,7 @@ from ta.momentum import RSIIndicator
 import json
 from ta import add_all_ta_features
 # from ta.utils import dropna
-from bsedata.bse import BSE
+# from bsedata.bse import BSE
 direc = os.getcwd()
 st.set_page_config(page_title='Ledgr | Analytics', layout="wide",
                    initial_sidebar_state="expanded")
