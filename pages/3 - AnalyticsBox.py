@@ -30,12 +30,7 @@ direc = os.getcwd()
 st.set_page_config(page_title='Ledgr | Analytics', layout="wide",
                    initial_sidebar_state="expanded")
 
-b = BSE()
-# logofile2 = f"{direc}/pages/appdata/imgs/Ledgr_Logo_F1.png"
-tg = b.topGainers()
-df_tg = pd.DataFrame(tg)
-tl = b.topLosers()
-df_tl = pd.DataFrame(tl)
+
 pathtkr = f"{direc}/pages/appdata/tickerlist_y.csv"
 # Icons and Links ###########################
 ytube = f'{direc}/pages/appdata/imgs/ytube.svg'
