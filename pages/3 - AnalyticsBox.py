@@ -1218,7 +1218,8 @@ with st.container(border=True):
         st.plotly_chart(fig_macd_diff, use_container_width=True)
         st.info("The MACD Diff Plot indicates that refers to the difference or divergence between moving averages, which is the core calculation of the MACD indicator. It is calculated by subtracting the 26-period exponential moving average (EMA) from the 12-period EMA, creating a MACD plot.")
         st.plotly_chart(fig_macd_signal, use_container_width=True)
-        st.info("The MACD Signal Plot indicates that...")
+        st.info("""The MACD Signal Plot indicates The MACD signal line is a 9-period exponential moving average (EMA) of the MACD line itself
+. It helps generate buy and sell signals when the MACD line crosses above or below it.""")
 
     elif choix1 == "Average Directional Movement Index (ADX)":
 
