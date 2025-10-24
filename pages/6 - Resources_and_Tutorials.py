@@ -279,8 +279,7 @@ fbook = f'{direc}/pages/appdata/imgs/fbook.svg'
 insta = f'{direc}/pages/appdata/imgs/insta.svg'
 linkedin = f'{direc}/pages/appdata/imgs/linkedin.svg'
 ledgrblog = f'{direc}/pages/appdata/imgs/Ledgr_Logo_F1.png'
-dpiit = f'{
-    direc}/pages/appdata/imgs/AlphaLedgr Certificate of Recognition Startup India.png'
+dpiit = f'{direc}/pages/appdata/imgs/AlphaLedgr Certificate of Recognition Startup India.png'
 # #############################################################################
 # nx1, nx2, nx3 = st.columns([3, 2, 3])
 # with nx1:
