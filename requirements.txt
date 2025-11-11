@@ -27,6 +27,8 @@ tensorflow
 streamlit_pdf_viewer
 bsedata
 nsepy
+Authlib
+st-paywall
 gcsfs
 st-files-connection
 Authlib
