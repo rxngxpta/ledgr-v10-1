@@ -393,7 +393,7 @@ st.write("  -------------  ")
 
 
 st.header("Trends, Returns & Risk Exposure")
-with st.container():
+with st.container(border=True):
     st.plotly_chart(figRet, use_container_width=True)
     x7, x8, x9 = st.columns([2, 3, 2])
     with x7:
@@ -419,7 +419,7 @@ st.info(
 )
 st.write("  -------------  ")
 
-with st.container():
+with st.container(border=True):
     cbb1, cbb2, cbb3, cbb4 = st.columns([2, 1, 1, 1])
     with cbb1:
         st.subheader("Option - 1")
@@ -442,7 +442,7 @@ with st.container():
         "Mean-variance optimization (MVO) is a fundamental concept in portfolio management, aiming to construct a portfolio that maximizes expected return for a given level of risk or minimizes risk for a given level of return. It's based on the principle that investors are risk-averse and prefer higher returns for the same level of risk or lower risk for the same level of return"
     )
 st.write("  -------------  ")
-with st.container():
+with st.container(border=True):
     cbb4, cbb5, cbb6, cbb7 = st.columns([2, 1, 1, 1])
     with cbb4:
         st.subheader("Option - 2")
@@ -464,7 +464,7 @@ with st.container():
         "Leverage on graph theory and machine learning to build diversified portfolios by clustering assets into hierarchical structures. Generate a portfolio where each asset's risk contribution to the overall portfolio is equal, similar to traditional risk parity, but with a hierarchical approach to asset clustering. HRP is designed to improve upon traditional risk parity methods by considering the hierarchical relationships between assets"
     )
 st.write("  -------------  ")
-with st.container():
+with st.container(border=True):
     cbb7, cbb8, cbb9, cbb10 = st.columns([2, 1, 1, 1])
     with cbb7:
         st.subheader("Option - 3")
@@ -487,7 +487,7 @@ with st.container():
         "The algorithm works by iteratively finding critical values (turning points) on the efficient frontier. Starting with a portfolio where maximizing utility is equivalent to maximizing expected portfolio return. Then by adjusting a parameter related to the risk-aversion level, the algorithm traces out the entire efficient frontier."
     )  # st.plotly_chart(fig_cla)
 st.write("  -------------  ")
-with st.container():
+with st.container(border=True):
     cbb11, cbb12, cbb13, cbb14 = st.columns([2, 1, 1, 1])
     with cbb11:
         st.subheader("Option - 4")
@@ -509,7 +509,7 @@ with st.container():
         " A variation of portfolio optimization that considers only the negative deviations from a target return, unlike traditional mean-variance optimization which considers both positive and negative deviations, Efficient Semi Variance Optimization algortithm  focuses on finding portfolios that minimize downside risk, the risk of returns falling below a certain target, while maximizing returns. "
     )
 st.write("  -------------  ")
-with st.container():
+with st.container(border=True):
     cbb77, cbb7a, cbb8a = st.columns(3)
     with cbb77:
         st.subheader("Option - 5")
@@ -552,7 +552,7 @@ with column5:
 with c0a:
     st.write(" ")
 # # ###################################################################
-with st.container():
+with st.container(border=True):
     f9, f10, f11 = st.columns([2, 5, 1])
     with f9:
         st.write(" ")
