@@ -60,7 +60,7 @@ insta = f"{direc}/pages/appdata/imgs/insta.svg"
 linkedin = f"{direc}/pages/appdata/imgs/linkedin.svg"
 ledgrblog = f"{direc}/pages/appdata/imgs/Ledgr_Logo_F2.png"
 
-tickerdb = pd.read_csv(pathtkr)
+tickerdb = pd.read_csv(pathtkr)python3-spyder
 tickerlist = tickerdb["SYMBOL"]
 # ###################### #######################################
 url_ytube = "https://www.youtube.com/@LedgrInc"
@@ -107,18 +107,19 @@ with st.form("pfinputs"):
     if submitted:
         st.cache_resource.clear()
         st.cache_data.clear()
-        st.success("Thanks! Optimization en course!")
-        pf_df = pd.DataFrame(
-            {
-                "Timestamp": dt.datetime.now(),
-                "Total Allocated Amount": tav,
-                "Customers Expected Returns": exp_returns,
-                "Risk Allowance": volatility_tolerance_range,
-            }
-        )
-        # st.write(pf_df)
-        # pf_df.to_csv(f"{bpath}/appdata/PortfolioLog.csv")
         pass
+st.success("Thanks! Optimization en course!")
+pf_df = pd.DataFrame(
+    {
+        "Timestamp": dt.datetime.now(),
+        "Total Allocated Amount": tav,
+        "Customers Expected Returns": exp_returns,
+        "Risk Allowance": volatility_tolerance_range,
+    }
+)
+# st.write(pf_df)
+# pf_df.to_csv(f"{bpath}/appdata/PortfolioLog.csv")
+
 
 
 @st.cache_data
@@ -533,24 +534,24 @@ with st.container(border=True):
             By combining assets with low or negative correlations,
             one can potentially achieve a more efficient arbitrage."""
     )
-st.write("  -------------  ")
-c0, column1, column2, column3, column4, column5, c0a = st.columns([1, 1, 1, 1, 1, 1, 1])
-with c0:
-    st.write(" ")
-with column1:
-    st.image(ytube, "[Ledgr's YouTube Channel](%s)" % url_ytube, width=60)
-with column2:
-    st.image(fbook, "[Our Meta Page ](%s)" % url_fb, width=60)
-with column3:
-    st.image(linkedin, "[Ledgr @ LinkedIn](%s)" % url_linkedin, width=60)
-with column4:
-    st.write(" ")
-    st.image(ledgrblog, "[Ledgr's Blog ](%s)" % url_blog, width=85)
-    st.write(" ")
-with column5:
-    st.image(insta, "[Ledgr @ Insta](%s)" % url_insta, width=60)
-with c0a:
-    st.write(" ")
+    st.write("  -------------  ")
+    c0, column1, column2, column3, column4, column5, c0a = st.columns([1, 1, 1, 1, 1, 1, 1])
+    with c0:
+        st.write(" ")
+    with column1:
+        st.image(ytube, "[Ledgr's YouTube Channel](%s)" % url_ytube, width=60)
+    with column2:
+        st.image(fbook, "[Our Meta Page ](%s)" % url_fb, width=60)
+    with column3:
+        st.image(linkedin, "[Ledgr @ LinkedIn](%s)" % url_linkedin, width=60)
+    with column4:
+        st.write(" ")
+        st.image(ledgrblog, "[Ledgr's Blog ](%s)" % url_blog, width=85)
+        st.write(" ")
+    with column5:
+        st.image(insta, "[Ledgr @ Insta](%s)" % url_insta, width=60)
+    with c0a:
+        st.write(" ")
 # # ###################################################################
 with st.container(border=True):
     f9, f10, f11 = st.columns([2, 5, 1])
