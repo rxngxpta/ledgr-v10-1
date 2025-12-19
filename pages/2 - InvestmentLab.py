@@ -60,7 +60,7 @@ insta = f"{direc}/pages/appdata/imgs/insta.svg"
 linkedin = f"{direc}/pages/appdata/imgs/linkedin.svg"
 ledgrblog = f"{direc}/pages/appdata/imgs/Ledgr_Logo_F2.png"
 
-tickerdb = pd.read_csv(pathtkr)python3-spyder
+tickerdb = pd.read_csv(pathtkr)
 tickerlist = tickerdb["SYMBOL"]
 # ###################### #######################################
 url_ytube = "https://www.youtube.com/@LedgrInc"
