@@ -31,5 +31,4 @@ Authlib
 st-paywall
 gcsfs
 st-files-connection
-Authlib
-st-paywall
+streamlit_option_menu

@@ -1,5 +1,5 @@
 ﻿import pandas as pd
-# import datetime as dt
+import datetime as dt
 import streamlit as st
 import os
 
@@ -35,57 +35,61 @@ st.sidebar.caption("""Hi. Thanks for your time with Ledgr. Ledgr develops on
                    active guidance from its Users and Visitors.""")
 
 st.sidebar.write("""Any suggestion and feedback is welcome!""")
-
+list1 = ["Dr. A & S Dasguptas", "Mr. G Bhattacharyya",
+" Mr. Debayan Chaterjee", "Mr. Pritam Saha", " Mr. D Bose",
+"Mr. T Sengupta", "Mrs U Sen", "Mr M Sarkar", "Dr. R Davidson",
+"Mr M. A. Thiriat",'Mr Owen Poulain', "Dr. Arnab RoyChowdhury",
+'Dr. Debabani Roychowdhury']
+list2 = ["Guidance, Teaching and Support", "Trust & Tactical Advice",
+"Tactical Advice", "Tactical Advice", "Adoptee and Support",
+"Support", "Teaching, Advice and Support", "Technical Advisory",
+"Training and Tactical knowhow", "Inspiration and Mentorship",
+"Support, Inspiration and Guidance", 'Partner in Crime',
+"Hard Guidance, Advisory and observatorship",
+"Observatorship & Moderating"]
 st.write("  ---------------------------------------------------------------  ")
-c21, c22 = st.columns(2)
-with c21:
-    st.header("Drop in some wisdom here, please!")
-    st.write("Please let us know about your experience and suggestions below:")
-    with st.form('Feedback'):
-        name = st.text_input("Your Name")
-        email = st.text_input("Your Email")
-        phone = st.number_input("Your Contact Number [Not Mandatory]")
-        feedbck_1 = st.text_area("Please write in your message here!!")
-        feedbck_2 = st.text_area("Any additional features/ideas/suggestions?")
-        exp_level = st.slider(label='Rate your Experience out of 10!',
-                              min_value=1, max_value=10,
-                              value=6, step=1, help=None)
-        submitted = st.form_submit_button("Submit")
-        if submitted:
-            df_feedback_2 = pd.DataFrame({"Name": [name], "Email": [email],
-                                          "Phone": [phone],
-                                          "feedbck_1": [feedbck_1],
-                                          "feedbck_2": [feedbck_2],
-                                          "exp_level": [exp_level]})
-            st.write(df_feedback_2)
-            df_feedback_2.to_csv(f"{direc}/appdata/User_FBack.csv")
-st.write("  ---------------------------------------------------------------  ")
-with c22:
-    st.header("2. Acknowledgements")
-    st.subheader("*Mentors, Critiques, Collaborators *")
-    st.write("""To you guys, LedgrTeam fail to articulate their gratitude.
-               Best we can do is deliver, with your guidance as our rudder.""")
-    st.markdown('''The list is inexhaustive.
-                People help us by the day.
-                We shall do our best to include as many of them here!''')
-    list1 = ["Dr. A & S Dasguptas", "Mr. G Bhattacharyya",
-             " Mr. Debayan Chaterjee",
-             "Mr. Pritam Saha", " Mr. D Bose", "Mr. T Sengupta", "Mrs U Sen",
-             "Mr M Sarkar", "Mrs. R Davidson", "Mr M. A. Thiriat",
-             'Mr Owen Poulain', "Dr. Arnab RoyChowdhury",
-             'Dr. Debabani Roychowgdhury']
-    list2 = ["Guidance, Teaching and Support", "Trust & Tactical Advice",
-             "Tactical Advice", "Tactical Advice", "Adoptee and Support",
-             "Support", "Teaching, Advice and Support", "Technical Advisory",
-             "Training and Tactical knowhow", "Inspiration and Mentorship",
-             "Support, Inspiration and Guidance", 'Partner in Crime',
-             "Hard Guidance, Advisory and observatorship",
-             "Observatorship & Moderating"]
+if not st.user.is_logged_in:
+    st.warning("Please LogIn. Go to the Homepage and Hit the button!")
+    st.stop()
+else:
+    st.sidebar.button("Log out", on_click=st.logout)
+    st.title("Feedbacks, Contacts & Collaboration")
+    c21, c22 = st.columns(2)
+    with c21:
+        st.header("Drop in some wisdom here, please!")
+        st.write("Please let us know about your experience and suggestions below:")
+        with st.form('Feedback'):
+            name = st.text_input("Your Name")
+            email = st.text_input("Your Email")
+            phone = st.number_input("Your Contact Number [Not Mandatory]")
+            feedbck_1 = st.text_area("Please write in your message here!!")
+            feedbck_2 = st.text_area("Any additional features/ideas/suggestions?")
+            exp_level = st.slider(label='Rate your Experience out of 10!',
+                                  min_value=1, max_value=10,
+                                  value=6, step=1, help=None)
+            submitted = st.form_submit_button("Submit")
+            if submitted:
+                df_feedback_2 = pd.DataFrame({"Name": [name], "Email": [email],
+                                              "Phone": [phone],
+                                              "feedbck_1": [feedbck_1],
+                                              "feedbck_2": [feedbck_2],
+                                              "exp_level": [exp_level]})
+                st.write(df_feedback_2)
+                # df_feedback_2.to_csv(f"{direc}/appdata/User_FBack.csv")
+    st.write("  ---------------------------------------------------------------  ")
+    with c22:
+        st.header("2. Acknowledgements")
+        st.subheader("*Mentors, Critiques, Collaborators *")
+        st.write("""To you guys, LedgrTeam fail to articulate their gratitude.
+                   Best we can do is deliver, with your guidance as our rudder.""")
+        st.markdown('''The list is inexhaustive.
+                    People help us by the day.
+                    We shall do our best to include as many of them here!''')
+        
 
-    st.header("The Ledgr Community")
-    contri1 = pd.DataFrame({"Name or CallSign": list1,
-                            'Contribution': list2})
-    contri1
+        st.header("The Ledgr Community")
+        contri1 = pd.DataFrame({"Name or CallSign": list1})
+        contri1
 
 st.write("  ---------------------------------------------------------------  ")
 c0, column1, column2, column3, column4, column5, c0a = st.columns([1, 1, 1, 1,
