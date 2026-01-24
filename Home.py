@@ -20,7 +20,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from authlib.integrations.requests_client import OAuth2Session
 
-
+st.write(f'{direc}')
 USERS_FILE = "/home/r-xn/Documents/ledgr-v16/pages/appdata/u_info/users.csv"
 
 # ---------------------------
