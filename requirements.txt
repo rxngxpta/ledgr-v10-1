@@ -31,4 +31,8 @@ Authlib
 st-paywall
 gcsfs
 st-files-connection
-streamlit_option_menu
+Authlib
+st-paywall
+python-dateutil
+google-auth
+python-utils

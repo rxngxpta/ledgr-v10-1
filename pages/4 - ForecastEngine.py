@@ -60,116 +60,110 @@ url_blog = 'https://www.alphaledgr.com/Blog'
 url_linkedin = "https://www.linkedin.com/company/ledgrapp/"
 choicelist = ["Prophet", "LSTM", "Others"]
 st.write("  ---------------------------------------------------------------  ")
-if not st.user.is_logged_in:
-    st.warning("Please LogIn. Go to the Homepage and Hit the button!")
-    st.stop()
-else:
-    st.sidebar.button("Log out", on_click=st.logout)
-    st.title("Forecast Price Ranges. Just select a stock ticker.")
 
 
-    fc1, fc2 = st.columns([2, 3])
-    with fc1:
-        st.caption("Train Ledgr's AI Engines. Forecast Asset Prices.")
-        st.info("Chart behaviour, predict price-ranges, observe trajectories.")
-    with fc2:
-        st.video('https://youtu.be/QVGy-AnBR4I?si=Y0gl5QwrR9AoE4ft')
+fc1, fc2 = st.columns([2, 3])
+with fc1:
+    st.caption("Train Ledgr's AI Engines. Forecast Asset Prices.")
+    st.info("Chart behaviour, predict price-ranges, observe trajectories.")
+with fc2:
+    st.video('https://youtu.be/QVGy-AnBR4I?si=Y0gl5QwrR9AoE4ft')
 
-    st.write("    -----------------------------------------------------------    ")
-    # Functions & Cached Resources ######################################
-    with st.form("user_inputs"):
-        stock2 = st.selectbox("Please Select a Security Symbol", tickerlist)
-        stock = stock2 + '.NS'
-        submitted = st.form_submit_button("Proceed")
-        if not submitted:
-            st.stop()
-
-
-    @st.cache_data
-    def getdata(stock):
-        BSE = yf.Ticker(stock)
-        df = BSE.history(period='5y')
-        df = df.dropna()
-        return df
+st.write("    -----------------------------------------------------------    ")
+# Functions & Cached Resources ######################################
+with st.form("user_inputs"):
+    stock2 = st.selectbox("Please Select a Security Symbol", tickerlist)
+    stock = stock2 + '.NS'
+    submitted = st.form_submit_button("Proceed")
+    if not submitted:
+        st.stop()
 
 
-    df = getdata(stock)
-    # df = df.Close
-    # df = df.reset_index()
-    # df = df.set_index(["Date"], inplace=True)
-    # st.write(df)
-    ind = df.index
-    ind = ind.tz_localize(None)
-    # open = df.Open.values
-    # hi = df.High.values
-    # lo = df.Low.values
-    close = df.Close
-    prof_df_close = pd.DataFrame({"ds": ind, "y": close})
-    prof_df_close = prof_df_close.set_index(['ds'])
-    # st.write(prof_df_close)
-    prof_df_close = prof_df_close.reset_index()
-    # st.write(prof_df_close.tail(5))
+@st.cache_data
+def getdata(stock):
+    BSE = yf.Ticker(stock)
+    df = BSE.history(period='5y')
+    df = df.dropna()
+    return df
 
 
-    m = Prophet()
-    m.fit(prof_df_close)
-    future_year = m.make_future_dataframe(periods=60)
-    forecast_year = m.predict(future_year)
-    a = plot_plotly(m, forecast_year)
-    a.update_xaxes(title="Timeline", visible=True, showticklabels=True)
-    a.update_yaxes(title="Predicted Prices (INR)", visible=True)
-    a.update_traces(marker_color="green", selector=dict(mode='markers'))
-    b = plot_components_plotly(m, forecast_year)
-    b.update_xaxes(title="Timeline", visible=True, showticklabels=True)
-    b.update_yaxes(title="Predicted Prices (INR)", visible=True)
-    dx = forecast_year.filter(["ds", 'yhat'], axis=1)
-    dx = dx.set_index(['ds'])
-    dx.rename(columns={'yhat': 'Predictions'}, inplace=True)
-    c = px.line(dx)
-    c.add_trace(go.Scatter(x=dx.index, y=df['Close'], name='Close'))
-    c.update_xaxes(title='Timeline', showticklabels=True, visible=True)
-    c.update_yaxes(title="Price Data", visible=True)
-    c.update_layout(legend=dict(
-        orientation="h",
-        entrywidth=100,
-        yanchor="bottom",
-        y=1.02,
-        xanchor="right", x=1
-    ))
-
-    with st.container(border=True):
-        k1, k2, k3 = st.columns([4, 3, 4])
-        with k1:
-            st.write(" ")
-        with k2:
-            st.subheader("Forecast Plots")
-        with k3:
-            st.write(" ")
-
-    with st.container(border=True):
-        st.info("""The Real Prices are scattered with the forecast line.""")
-        st.plotly_chart(a, use_container_width=True)
-        with st.expander("Get Forecast Data Here!"):
-            st.write(forecast_year.iloc[-100:])
+df = getdata(stock)
+# df = df.Close
+# df = df.reset_index()
+# df = df.set_index(["Date"], inplace=True)
+# st.write(df)
+ind = df.index
+ind = ind.tz_localize(None)
+# open = df.Open.values
+# hi = df.High.values
+# lo = df.Low.values
+close = df.Close
+prof_df_close = pd.DataFrame({"ds": ind, "y": close})
+prof_df_close = prof_df_close.set_index(['ds'])
+# st.write(prof_df_close)
+prof_df_close = prof_df_close.reset_index()
+# st.write(prof_df_close.tail(5))
 
 
-    with st.container(border=True):
-        st.info("""The Closing Prices and the Predictions are plot identically as
-                linear plots for comparison.""")
-        st.plotly_chart(c, use_container_width=True)
+m = Prophet()
+m.fit(prof_df_close)
+future_year = m.make_future_dataframe(periods=60)
+forecast_year = m.predict(future_year)
+a = plot_plotly(m, forecast_year)
+a.update_xaxes(title="Timeline", visible=True, showticklabels=True)
+a.update_yaxes(title="Predicted Prices (INR)", visible=True)
+a.update_traces(marker_color="green", selector=dict(mode='markers'))
+b = plot_components_plotly(m, forecast_year)
+b.update_xaxes(title="Timeline", visible=True, showticklabels=True)
+b.update_yaxes(title="Predicted Prices (INR)", visible=True)
+dx = forecast_year.filter(["ds", 'yhat'], axis=1)
+dx = dx.set_index(['ds'])
+dx.rename(columns={'yhat': 'Predictions'}, inplace=True)
+c = px.line(dx)
+c.add_trace(go.Scatter(x=dx.index, y=df['Close'], name='Close'))
+c.update_xaxes(title='Timeline', showticklabels=True, visible=True)
+c.update_yaxes(title="Price Data", visible=True)
+c.update_layout(legend=dict(
+    orientation="h",
+    entrywidth=100,
+    yanchor="bottom",
+    y=1.02,
+    xanchor="right", x=1
+))
 
-    with st.container(border=True):
-        j1, j2, j3 = st.columns([5, 6, 4])
-        with j1:
-            st.write(" ")
-        with j2:
-            st.subheader("Price Trajectory")
-        with j3:
-            st.write(" ")
-        st.markdown(
-            """Track the Price Trajectory over a particular time
-            scale based on historical data, over years, months and weeks""")
-        st.plotly_chart(b, use_container_width=True)
+with st.container(border=True):
+    k1, k2, k3 = st.columns([4, 3, 4])
+    with k1:
+        st.write(" ")
+    with k2:
+        st.subheader("Forecast Plots")
+    with k3:
+        st.write(" ")
+
+with st.container(border=True):
+    st.info("""The Real Prices are scattered with the forecast line.""")
+    st.plotly_chart(a, use_container_width=True)
+    with st.expander("Get Forecast Data Here!"):
+        st.write(forecast_year.iloc[-100:])
+
+
+with st.container(border=True):
+    st.info("""The Closing Prices and the Predictions are plot identically as
+            linear plots for comparison.""")
+    st.plotly_chart(c, use_container_width=True)
+
+with st.container(border=True):
+    j1, j2, j3 = st.columns([5, 6, 4])
+    with j1:
+        st.write(" ")
+    with j2:
+        st.subheader("Price Trajectory")
+    with j3:
+        st.write(" ")
+    st.markdown(
+        """Track the Price Trajectory over a particular time
+        scale based on historical data, over years, months and weeks""")
+    st.plotly_chart(b, use_container_width=True)
 
 st.write("  ---------------------------------------------------------------  ")
 

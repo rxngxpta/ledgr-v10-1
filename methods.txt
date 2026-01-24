@@ -1,0 +1,318 @@
+Below is a **consolidated, production-grade extension** of your existing system that implements **all five requested capabilities**, designed specifically for **GCP + Streamlit + Stripe**. This is how this would be built in a real SaaS environment.
+
+I will structure this as:
+
+1. Target architecture (important)
+2. CSV → Firestore migration
+3. Stripe auto-renewing subscriptions
+4. Stripe Customer Portal
+5. Usage-based billing
+6. Invoice history inside Streamlit
+7. Security and operational notes
+
+Code examples are **modular and composable**, not toy snippets.
+
+---
+
+## 1. Final Target Architecture (Recommended)
+
+```
+Cloud Run
+ ├── Streamlit App (UI, auth, billing UI)
+ ├── Stripe Webhook Service (Flask/FastAPI)
+ └── Firestore (Users, Subscriptions, Usage)
+```
+
+**Key design changes**
+
+* CSV eliminated
+* Firestore becomes the system of record
+* Stripe manages billing state
+* Firestore mirrors Stripe state for fast access control
+
+---
+
+## 2. Migrate CSV → Firestore
+
+### Firestore Data Model
+
+#### `users` collection
+
+```json
+{
+  "email": "user@example.com",
+  "stripe_customer_id": "cus_123",
+  "subscription_status": "active | trialing | past_due | canceled",
+  "subscription_plan": "daily | weekly | monthly | metered",
+  "subscription_expiry": "2026-02-20T00:00:00Z",
+  "created_at": "timestamp"
+}
+```
+
+#### `usage` collection
+
+```json
+{
+  "email": "user@example.com",
+  "period": "2026-02",
+  "units_used": 143
+}
+```
+
+---
+
+### Firestore Initialization
+
+```python
+from google.cloud import firestore
+
+db = firestore.Client()
+```
+
+---
+
+### Replace CSV Load/Save
+
+```python
+def get_user(email):
+    doc = db.collection("users").document(email).get()
+    return doc.to_dict() if doc.exists else None
+
+def create_user(email, stripe_customer_id):
+    db.collection("users").document(email).set({
+        "email": email,
+        "stripe_customer_id": stripe_customer_id,
+        "subscription_status": "inactive",
+        "created_at": firestore.SERVER_TIMESTAMP
+    })
+
+def update_subscription(email, data):
+    db.collection("users").document(email).update(data)
+```
+
+---
+
+## 3. Stripe Auto-Renewing Subscriptions
+
+### Stripe Setup
+
+Create **recurring prices**:
+
+* Daily (interval: day)
+* Weekly (interval: week)
+* Monthly (interval: month)
+* Metered (usage-based)
+
+---
+
+### Create Stripe Customer + Subscription
+
+```python
+import stripe
+stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
+
+def create_subscription(email, price_id):
+    customer = stripe.Customer.create(email=email)
+
+    subscription = stripe.Subscription.create(
+        customer=customer.id,
+        items=[{"price": price_id}],
+        payment_behavior="default_incomplete",
+        expand=["latest_invoice.payment_intent"]
+    )
+
+    return customer.id, subscription
+```
+
+---
+
+### Stripe Webhook (Authoritative)
+
+Handle:
+
+* `customer.subscription.created`
+* `customer.subscription.updated`
+* `customer.subscription.deleted`
+
+```python
+if event["type"].startswith("customer.subscription"):
+    sub = event["data"]["object"]
+    customer = stripe.Customer.retrieve(sub["customer"])
+
+    update_subscription(
+        email=customer.email,
+        data={
+            "subscription_status": sub["status"],
+            "subscription_plan": sub["items"]["data"][0]["price"]["nickname"],
+            "subscription_expiry": datetime.fromtimestamp(sub["current_period_end"]).isoformat()
+        }
+    )
+```
+
+**Never trust Streamlit for subscription state.**
+
+---
+
+## 4. Stripe Customer Portal
+
+This allows:
+
+* Cancel subscription
+* Change plans
+* Update payment method
+* Download invoices
+
+### Create Portal Session (Streamlit)
+
+```python
+def create_portal_session(customer_id, return_url):
+    session = stripe.billing_portal.Session.create(
+        customer=customer_id,
+        return_url=return_url
+    )
+    return session.url
+```
+
+### Streamlit Button
+
+```python
+if st.button("Manage Billing"):
+    portal_url = create_portal_session(
+        user["stripe_customer_id"],
+        "https://your-app-url"
+    )
+    st.markdown(f"[Open Billing Portal]({portal_url})", unsafe_allow_html=True)
+```
+
+---
+
+## 5. Usage-Based Billing (Metered)
+
+### Stripe Price Configuration
+
+* Billing model: **Metered**
+* Usage aggregation: `sum`
+* Reporting: `increment`
+
+---
+
+### Report Usage (Server-Side Only)
+
+```python
+def report_usage(subscription_item_id, units):
+    stripe.UsageRecord.create(
+        subscription_item=subscription_item_id,
+        quantity=units,
+        timestamp=int(time.time()),
+        action="increment"
+    )
+```
+
+### Example Use Case
+
+```python
+def on_api_call(email):
+    user = get_user(email)
+
+    db.collection("usage").add({
+        "email": email,
+        "period": datetime.utcnow().strftime("%Y-%m"),
+        "units_used": firestore.Increment(1)
+    })
+
+    report_usage(user["subscription_item_id"], 1)
+```
+
+---
+
+## 6. Invoice History in Streamlit
+
+### Retrieve Invoices from Stripe
+
+```python
+def get_invoices(customer_id):
+    return stripe.Invoice.list(customer=customer_id, limit=12)
+```
+
+---
+
+### Streamlit UI
+
+```python
+st.subheader("Billing History")
+
+invoices = get_invoices(user["stripe_customer_id"])
+
+for inv in invoices.auto_paging_iter():
+    st.write({
+        "Invoice": inv.number,
+        "Amount": f"${inv.amount_paid / 100:.2f}",
+        "Status": inv.status,
+        "Date": datetime.fromtimestamp(inv.created).strftime("%Y-%m-%d"),
+        "PDF": inv.invoice_pdf
+    })
+```
+
+This works even if the user also accesses invoices via the Customer Portal.
+
+---
+
+## 7. Access Control Logic (Final)
+
+```python
+def has_access(user):
+    return user and user["subscription_status"] in ("active", "trialing")
+```
+
+Every Streamlit page:
+
+```python
+if not has_access(user):
+    st.error("Active subscription required")
+    st.stop()
+```
+
+---
+
+## 8. Security & Operational Notes (Non-Optional)
+
+### Required
+
+* Stripe webhooks on **separate Cloud Run service**
+* Firestore rules locked to service account
+* Idempotency handling in webhooks
+* HTTPS only
+
+### Strongly Recommended
+
+* Identity-Aware Proxy (IAP)
+* Firestore transactions
+* Stripe retries + dead-letter queue
+* Audit logs for billing events
+
+---
+
+## 9. What You Now Have
+
+✔ Firestore-backed user system
+✔ OAuth-secured Streamlit app
+✔ Auto-renewing Stripe subscriptions
+✔ Metered usage billing
+✔ Customer self-service portal
+✔ Invoice history inside your UI
+✔ SaaS-grade access control
+
+---
+
+## 10. Next Logical Enhancements
+
+If you want, the next **production-level** steps would be:
+
+* Free trials with automatic conversion
+* Per-feature entitlements
+* Team / seat-based billing
+* Admin billing dashboard
+* Revenue metrics (MRR, churn)
+
+State the next requirement and I will extend this architecture accordingly.
+
